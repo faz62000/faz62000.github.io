@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://app.lemonsqueezy.com"> 
-    <link rel="preconnect" href="https://assets.lemonsqueezy.com">
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+    <link rel="dns-prefetch" href="https://app.lemonsqueezy.com">
+    <link rel="dns-prefetch" href="https://assets.lemonsqueezy.com">
+    
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://app.lemonsqueezy.com" crossorigin>
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://app.lemonsqueezy.com https://assets.lemonsqueezy.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://app.lemonsqueezy.com https://assets.lemonsqueezy.com; img-src 'self' data: https://app.lemonsqueezy.com; frame-src https://app.lemonsqueezy.com;">
 
@@ -13,34 +17,42 @@
     <meta name="description" content="Official portfolio of Devrim ONCU. Download SpeakEasy AI and Football Analyzer Pro. High-performance Android solutions.">
     <meta name="author" content="Devrim ONCU">
     <meta name="theme-color" content="#0f172a">
+    <link rel="canonical" href="https://www.devrimoncu.com">
 
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
     <style>
+        /* Kritik CSS (Inline) */
         :root { --bg-dark: #0f172a; --card-bg: rgba(30, 41, 59, 0.85); --primary: #38bdf8; --accent: #f472b6; --text-main: #f1f5f9; --success: #22c55e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; line-height: 1.6; min-height: 100vh; }
         
-        /* Header & Hero */
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px); background: rgba(15, 23, 42, 0.8); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        body { 
+            background-color: var(--bg-dark); color: var(--text-main); 
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* Native Font Hızı */
+            margin: 0; padding: 0; line-height: 1.6; min-height: 100vh; 
+            overflow-x: hidden;
+        }
+        
+        /* Layout Optimization */
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px); background: rgba(15, 23, 42, 0.9); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(255,255,255,0.05); height: 70px; }
         .logo { font-size: 1.4rem; font-weight: 900; background: linear-gradient(to right, white, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-btn { border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+        .nav-btn { border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-block; }
         
-        .hero { text-align: center; padding: 60px 20px; max-width: 800px; margin: 0 auto; }
+        .hero { text-align: center; padding: 60px 20px; max-width: 800px; margin: 0 auto; content-visibility: auto; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; line-height: 1.2; }
         .hero p { color: #94a3b8; font-size: 1.1rem; }
         
-        /* Stats */
-        .stats-bar { display: flex; justify-content: center; gap: 15px; margin: 40px 0; }
+        .stats-bar { display: flex; justify-content: center; gap: 15px; margin: 40px 0; min-height: 85px; }
         .stat-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); text-align: center; min-width: 130px; }
         .stat-number { font-size: 1.6rem; font-weight: 800; color: white; display: block; }
         .stat-label { font-size: 0.75rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Products Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; padding: 20px 5%; max-width: 1200px; margin: 0 auto 80px auto; }
-        .product-card { background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: transform 0.3s; position: relative; }
-        .product-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .product-card { background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: transform 0.2s; position: relative; will-change: transform; }
+        .product-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         
         .card-header { height: 140px; background: linear-gradient(135deg, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: var(--primary); }
         .card-body { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
@@ -49,81 +61,81 @@
         .live-stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; margin: 20px 0; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .price-tag { font-size: 1.8rem; font-weight: 800; color: white; margin-bottom: 15px; display: block; }
 
-        .buy-btn { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; margin-top: auto; transition: 0.2s; display:flex; justify-content:center; align-items:center; gap:10px; }
-        .buy-btn:hover { background: var(--primary); transform: scale(1.02); }
+        .buy-btn { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; margin-top: auto; transition: 0.2s; display:flex; justify-content:center; align-items:center; gap:10px; min-height: 56px; }
+        .buy-btn:hover { background: var(--primary); }
         .buy-btn:disabled { opacity: 0.7; cursor: wait; }
-
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">DEV.ONCU</div>
-        <a href="mailto:devrimoncu6278@gmail.com" class="nav-btn">Contact</a>
+        <a href="mailto:devrimoncu6278@gmail.com" class="nav-btn" aria-label="Contact Devrim ONCU">Contact</a>
     </header>
 
-    <section class="hero">
-        <h1>Android Ecosystem<br><span style="color:var(--primary)">Store & Portfolio</span></h1>
-        <p>Official distribution center for Devrim ONCU Apps. Secure checkout and instant delivery.</p>
-        
-        <div class="stats-bar">
-            <div class="stat-card">
-                <span class="stat-number" id="global-downloads">...</span>
-                <span class="stat-label">Total Downloads</span>
+    <main>
+        <section class="hero">
+            <h1>Android Ecosystem<br><span style="color:var(--primary)">Store & Portfolio</span></h1>
+            <p>Official distribution center for Devrim ONCU Apps. Secure checkout and instant delivery.</p>
+            
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <span class="stat-number" id="global-downloads">1.5K+</span>
+                    <span class="stat-label">Total Downloads</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="global-views">5.2K+</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <span class="stat-number" id="global-views">...</span>
-                <span class="stat-label">Active Users</span>
-            </div>
+        </section>
+
+        <div class="grid">
+            
+            <article class="product-card">
+                <div class="card-header"><i class="fas fa-language" aria-hidden="true"></i></div>
+                <div class="card-body">
+                    <h2 class="card-title">SpeakEasy AI</h2>
+                    <p style="color:#94a3b8; font-size:0.95rem;">Premium English Learning Assistant v2.0</p>
+                    
+                    <div class="live-stats">
+                        <span id="view-speakeasy">Loading...</span>
+                        <span id="down-speakeasy">...</span>
+                    </div>
+                    
+                    <span class="price-tag" id="price-speakeasy">$4.99</span>
+                    
+                    <button class="buy-btn" id="btn-speakeasy" onclick="buyProduct('speakeasy')" aria-label="Buy SpeakEasy AI">
+                        Buy / Download <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <div class="card-header"><i class="fas fa-futbol" aria-hidden="true"></i></div>
+                <div class="card-body">
+                    <h2 class="card-title">Football Analyzer Pro</h2>
+                    <p style="color:#94a3b8; font-size:0.95rem;">Match prediction engine & stats.</p>
+                    
+                    <div class="live-stats">
+                        <span id="view-football">Loading...</span>
+                        <span id="down-football">...</span>
+                    </div>
+                    
+                    <span class="price-tag" id="price-football">$12.99</span>
+                    
+                    <button class="buy-btn" id="btn-football" onclick="buyProduct('football')" aria-label="Buy Football Analyzer">
+                        Buy / Download <i class="fas fa-lock" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </article>
         </div>
-    </section>
-
-    <div class="grid">
-        
-        <article class="product-card">
-            <div class="card-header"><i class="fas fa-language"></i></div>
-            <div class="card-body">
-                <h3 class="card-title">SpeakEasy AI</h3>
-                <p style="color:#94a3b8; font-size:0.95rem;">Premium English Learning Assistant v2.0</p>
-                
-                <div class="live-stats">
-                    <span id="view-speakeasy">Loading...</span>
-                    <span id="down-speakeasy">...</span>
-                </div>
-                
-                <span class="price-tag" id="price-speakeasy">$4.99</span>
-                
-                <button class="buy-btn" id="btn-speakeasy" onclick="buyProduct('speakeasy')">
-                    Buy / Download <i class="fas fa-shopping-cart"></i>
-                </button>
-            </div>
-        </article>
-
-        <article class="product-card">
-            <div class="card-header"><i class="fas fa-futbol"></i></div>
-            <div class="card-body">
-                <h3 class="card-title">Football Analyzer Pro</h3>
-                <p style="color:#94a3b8; font-size:0.95rem;">Match prediction engine & stats.</p>
-                
-                <div class="live-stats">
-                    <span id="view-football">Loading...</span>
-                    <span id="down-football">...</span>
-                </div>
-                
-                <span class="price-tag" id="price-football">$12.99</span>
-                
-                <button class="buy-btn" id="btn-football" onclick="buyProduct('football')">
-                    Buy / Download <i class="fas fa-lock"></i>
-                </button>
-            </div>
-        </article>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Config (Sizin Anahtarlarınız)
         const firebaseConfig = {
             apiKey: "AIzaSyAF2euAAbPEyOuVzsDT-EVm7k64Py1WNAk",
             authDomain: "devrimoncu-web.firebaseapp.com",
@@ -136,11 +148,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- LİNKLER BURADA ---
-        // SpeakEasy için Lemon Squeezy linki tanımlandı.
+        // Lemon Squeezy Linkleri
         const checkoutLinks = {
             "speakeasy": "https://devrimoncu.lemonsqueezy.com/checkout/buy/a5af7243-410f-4178-a084-ed4aa41927c6?embed=1",
-            "football": "" // Burası boş, link eklenince çalışacak
+            "football": "" 
         };
 
         async function loadData() {
@@ -151,17 +162,16 @@
         }
 
         async function updateUI(productId) {
+            // Hız için önce localStorage kontrol edilebilir ama şimdilik doğrudan çekiyoruz
             const docRef = doc(db, "products", productId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                document.getElementById(`price-${productId}`).innerText = "$" + data.price;
+                const priceEl = document.getElementById(`price-${productId}`);
+                if(priceEl) priceEl.innerText = "$" + data.price;
+                
                 document.getElementById(`view-${productId}`).innerText = (data.views || 0) + " Views";
                 document.getElementById(`down-${productId}`).innerText = (data.downloads || 0) + " Sales";
-                
-                // Global Sayaç Simülasyonu
-                document.getElementById('global-downloads').innerText = "1.5K+"; 
-                document.getElementById('global-views').innerText = "5.2K+";
             } else {
                  try { await createInitialData(productId); } catch(e){}
             }
@@ -171,7 +181,6 @@
             const btn = document.getElementById(`btn-${productId}`);
             const originalHTML = btn.innerHTML;
             
-            // Eğer link yoksa (Futbol uygulaması gibi) uyarı ver
             if (!checkoutLinks[productId]) {
                 alert("Football Analyzer Pro is currently in Beta testing. Sales will open soon!");
                 return;
@@ -181,21 +190,17 @@
             btn.disabled = true;
             
             try {
-                // 1. Veritabanında "İstek" sayısını artır (Opsiyonel analiz için)
                 const productRef = doc(db, "products", productId);
-                await updateDoc(productRef, { views: increment(1) }); // Satış kesinleşmediği için sadece view artırıyoruz
+                updateDoc(productRef, { views: increment(1) }); // Await kaldırıldı (Hız için)
                 
-                // 2. Lemon Squeezy Overlay'i Başlat
                 if (window.LemonSqueezy) {
                     LemonSqueezy.Url.Open(checkoutLinks[productId]);
                 } else {
-                    // Script yüklenmezse yedek olarak yeni sekmede aç
                     window.open(checkoutLinks[productId], '_blank');
                 }
-
             } catch (error) {
                 console.error(error);
-                window.location.href = checkoutLinks[productId]; // Hata olursa direkt git
+                window.location.href = checkoutLinks[productId];
             } finally {
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
@@ -205,16 +210,6 @@
         window.createInitialData = async (productId) => {
             await setDoc(doc(db, "products", productId), { price: "4.99", views: 100, downloads: 0 });
             updateUI(productId);
-        }
-
-        // Lemon Squeezy Event Listener (Opsiyonel: Satış tamamlanınca tetiklenebilir)
-        window.createLemonSqueezy = function() {
-            window.LemonSqueezy.Setup({
-                eventHandler: (event) => {
-                    // Burada satış başarılı olursa konfetiler patlatılabilir :)
-                    console.log(event);
-                }
-            });
         }
 
         loadData();
