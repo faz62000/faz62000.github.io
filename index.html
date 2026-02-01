@@ -25,7 +25,7 @@
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
     <style>
-        /* Kritik CSS (Inline) */
+        /* Kritik CSS (Inline) - Hızlı boyama için */
         :root { --bg-dark: #0f172a; --card-bg: rgba(30, 41, 59, 0.85); --primary: #38bdf8; --accent: #f472b6; --text-main: #f1f5f9; --success: #22c55e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
@@ -191,7 +191,7 @@
             
             try {
                 const productRef = doc(db, "products", productId);
-                updateDoc(productRef, { views: increment(1) }); // Await kaldırıldı (Hız için)
+                updateDoc(productRef, { views: increment(1) }); // Await kaldırıldı (UI bloklanmasın diye)
                 
                 if (window.LemonSqueezy) {
                     LemonSqueezy.Url.Open(checkoutLinks[productId]);
