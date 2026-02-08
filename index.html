@@ -49,6 +49,8 @@
         .new-badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; z-index: 10; box-shadow: 0 0 10px rgba(0,230,118,0.4); }
         .deepmotion-header { background: linear-gradient(135deg, #000000, #1a2c4e) !important; }
         .btn-download { background: linear-gradient(90deg, #00e676, #00b0ff); color: black; border: none; }
+        
+        .version-info { font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 8px; display: block; }
     </style>
     
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -94,9 +96,10 @@
                     </div>
                     <span class="price-tag" style="color:#00e676">Free <span style="font-size:0.8rem; color:#64748b; font-weight:400;">(In-App Purchase)</span></span>
                     
-                    <a href="https://github.com/faz62000/faz62000.github.io/releases/download/v1.0/DeepMotion.v1.0.apk" class="buy-btn btn-download" id="btn-deepmotion" onclick="trackDownload('deepmotion')" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
-                        <i class="fab fa-android"></i> Download APK
+                    <a href="#" class="buy-btn btn-download" id="btn-deepmotion" onclick="trackDownload('deepmotion')" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
+                        <i class="fas fa-spinner fa-spin"></i> Checking Updates...
                     </a>
+                    <span class="version-info" id="version-deepmotion">Connecting to server...</span>
                 </div>
             </article>
 
@@ -132,8 +135,44 @@
 
     <script>
         window.addEventListener('load', () => {
-            setTimeout(initHeavyTools, 2500);
+            fetchLatestVersion(); // Önce versiyonu çek
+            setTimeout(initHeavyTools, 2500); // Sonra Firebase'i yükle
         });
+
+        // --------------------------------------------------------------------------
+        // 1. DİNAMİK VERSİYON KONTROLÜ (DeepMotion-Updates Deposundan Çeker)
+        // --------------------------------------------------------------------------
+        async function fetchLatestVersion() {
+            const btn = document.getElementById('btn-deepmotion');
+            const versionLabel = document.getElementById('version-deepmotion');
+            
+            // "Cache Buster" eklendi (?t=...) -> Bu sayede tarayıcı her zaman EN YENİ dosyayı görür.
+            const VERSION_URL = "https://raw.githubusercontent.com/faz62000/DeepMotion-Updates/main/version.json?t=" + new Date().getTime();
+
+            try {
+                const response = await fetch(VERSION_URL);
+                if (!response.ok) throw new Error("Version file not found");
+                
+                const data = await response.json();
+                
+                // Linki JSON'dan gelen 'url' ile değiştiriyoruz
+                btn.href = data.url; 
+                
+                // Butonun görüntüsünü değiştir
+                btn.innerHTML = '<i class="fab fa-android"></i> Download APK';
+                
+                // Versiyon bilgisini göster
+                versionLabel.innerText = `Latest Version: ${data.versionName}`;
+                versionLabel.style.color = "#00e676"; 
+                
+            } catch (error) {
+                console.error("Version fetch error:", error);
+                // Hata olursa varsayılan Releases sayfasına yönlendir
+                btn.href = "https://github.com/faz62000/DeepMotion-Updates/releases";
+                btn.innerHTML = '<i class="fab fa-github"></i> Go to Releases';
+                versionLabel.innerText = "Check GitHub manually";
+            }
+        }
 
         const checkoutLinks = {
             "speakeasy": "https://devrimoncu.lemonsqueezy.com/checkout/buy/a5af7243-410f-4178-a084-ed4aa41927c6?embed=1",
@@ -161,7 +200,7 @@
             window.firebaseOps = { doc, getDoc, updateDoc, increment, setDoc };
             
             // İstatistikleri Çek
-            refreshStats("deepmotion"); // Yeni ürün
+            refreshStats("deepmotion"); 
             refreshStats("speakeasy");
             refreshStats("football");
         }
@@ -177,11 +216,9 @@
             }
         }
 
-        // Sadece İndirme Takibi (DeepMotion için)
         window.trackDownload = async (pid) => {
             if(window.db) {
                 const ref = window.firebaseOps.doc(window.db, "products", pid);
-                // Hem görüntülenme hem indirme sayısını artır
                 window.firebaseOps.updateDoc(ref, { 
                     views: window.firebaseOps.increment(1),
                     downloads: window.firebaseOps.increment(1) 
@@ -189,20 +226,10 @@
             }
         }
 
-        // Satın Alma Fonksiyonu (Diğerleri için)
         window.handleBuy = async (pid) => {
             const btn = document.getElementById(`btn-${pid}`);
-            
-            if (!checkoutLinks[pid]) {
-                alert("Coming soon!"); return;
-            }
-
-            if (!window.LemonSqueezy) {
-                btn.innerText = "Opening...";
-                window.location.href = checkoutLinks[pid];
-                return;
-            }
-
+            if (!checkoutLinks[pid]) { alert("Coming soon!"); return; }
+            if (!window.LemonSqueezy) { btn.innerText = "Opening..."; window.location.href = checkoutLinks[pid]; return; }
             btn.innerHTML = "Processing...";
             try {
                 if(window.db) {
