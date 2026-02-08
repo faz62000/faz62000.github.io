@@ -42,7 +42,7 @@
         .live-stats { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; margin: 15px 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
         .price-tag { font-size: 1.6rem; font-weight: 800; color: white; margin-bottom: 15px; display: block; }
         
-        .buy-btn { width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; margin-top: auto; font-size: 1rem; transition: 0.2s; }
+        .buy-btn { width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; margin-top: auto; font-size: 1rem; transition: 0.2s; text-decoration: none; text-align: center; }
         .buy-btn:hover { background: var(--primary); transform: scale(1.02); }
         
         /* DeepMotion Özel Stilleri */
@@ -54,7 +54,6 @@
     </style>
     
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 </head>
 <body>
 
@@ -96,7 +95,7 @@
                     </div>
                     <span class="price-tag" style="color:#00e676">Free <span style="font-size:0.8rem; color:#64748b; font-weight:400;">(In-App Purchase)</span></span>
                     
-                    <a href="#" class="buy-btn btn-download" id="btn-deepmotion" onclick="trackDownload('deepmotion')" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <a href="#" class="buy-btn btn-download" id="btn-deepmotion" onclick="trackDownload('deepmotion')" style="display:flex; align-items:center; justify-content:center; gap:10px;">
                         <i class="fas fa-spinner fa-spin"></i> Checking Updates...
                     </a>
                     <span class="version-info" id="version-deepmotion">Connecting to server...</span>
@@ -134,43 +133,45 @@
     </main>
 
     <script>
+        // Sayfa yüklendiğinde işlemleri başlat
         window.addEventListener('load', () => {
-            fetchLatestVersion(); // Önce versiyonu çek
-            setTimeout(initHeavyTools, 2500); // Sonra Firebase'i yükle
+            fetchLatestVersion(); 
+            setTimeout(initHeavyTools, 2000); 
         });
 
         // --------------------------------------------------------------------------
-        // 1. DİNAMİK VERSİYON KONTROLÜ (DeepMotion-Updates Deposundan Çeker)
+        // 1. OTOMATİK VERSİYON VE LİNK YÖNETİMİ
         // --------------------------------------------------------------------------
         async function fetchLatestVersion() {
             const btn = document.getElementById('btn-deepmotion');
             const versionLabel = document.getElementById('version-deepmotion');
             
-            // "Cache Buster" eklendi (?t=...) -> Bu sayede tarayıcı her zaman EN YENİ dosyayı görür.
-            const VERSION_URL = "https://raw.githubusercontent.com/faz62000/DeepMotion-Updates/main/version.json?t=" + new Date().getTime();
+            // GitHub Raw linki (Cache engellemek için t parametresi eklendi)
+            const VERSION_JSON_URL = "https://raw.githubusercontent.com/faz62000/DeepMotion-Updates/main/version.json?t=" + new Date().getTime();
+            const BASE_RELEASE_URL = "https://github.com/faz62000/DeepMotion-Updates/releases/download";
 
             try {
-                const response = await fetch(VERSION_URL);
-                if (!response.ok) throw new Error("Version file not found");
+                const response = await fetch(VERSION_JSON_URL);
+                if (!response.ok) throw new Error("File not found");
                 
                 const data = await response.json();
+                const version = data.versionName; // Örn: 1.2
                 
-                // Linki JSON'dan gelen 'url' ile değiştiriyoruz
-                btn.href = data.url; 
+                // Dinamik indirme linkini oluştur
+                // GitHub Release Yapısı: .../download/v1.2/DeepMotion.apk
+                const downloadUrl = `${BASE_RELEASE_URL}/v${version}/DeepMotion.apk`;
                 
-                // Butonun görüntüsünü değiştir
-                btn.innerHTML = '<i class="fab fa-android"></i> Download APK';
-                
-                // Versiyon bilgisini göster
-                versionLabel.innerText = `Latest Version: ${data.versionName}`;
-                versionLabel.style.color = "#00e676"; 
+                // UI Güncelleme
+                btn.href = downloadUrl;
+                btn.innerHTML = `<i class="fab fa-android"></i> Download v${version}`;
+                versionLabel.innerText = `Latest Release: v${version}`;
+                versionLabel.style.color = "#00e676";
                 
             } catch (error) {
-                console.error("Version fetch error:", error);
-                // Hata olursa varsayılan Releases sayfasına yönlendir
+                console.error("Fetch error:", error);
                 btn.href = "https://github.com/faz62000/DeepMotion-Updates/releases";
-                btn.innerHTML = '<i class="fab fa-github"></i> Go to Releases';
-                versionLabel.innerText = "Check GitHub manually";
+                btn.innerHTML = '<i class="fab fa-github"></i> View All Releases';
+                versionLabel.innerText = "Automatic update failed. Check manually.";
             }
         }
 
@@ -179,70 +180,83 @@
             "football": "" 
         };
 
+        // --------------------------------------------------------------------------
+        // 2. FIREBASE VE ARAÇLARIN YÜKLENMESİ
+        // --------------------------------------------------------------------------
         async function initHeavyTools() {
-            const script = document.createElement('script');
-            script.src = "https://app.lemonsqueezy.com/js/lemon.js";
-            document.body.appendChild(script);
+            // LemonSqueezy Yükle
+            const lsScript = document.createElement('script');
+            lsScript.src = "https://app.lemonsqueezy.com/js/lemon.js";
+            document.body.appendChild(lsScript);
 
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-            const { getFirestore, doc, getDoc, updateDoc, increment, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            try {
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                const { getFirestore, doc, getDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyAF2euAAbPEyOuVzsDT-EVm7k64Py1WNAk",
-                authDomain: "devrimoncu-web.firebaseapp.com",
-                projectId: "devrimoncu-web",
-                storageBucket: "devrimoncu-web.firebasestorage.app",
-                messagingSenderId: "500535246792",
-                appId: "1:500535246792:web:3118c2d180443513b60afd"
-            };
+                const firebaseConfig = {
+                    apiKey: "AIzaSyAF2euAAbPEyOuVzsDT-EVm7k64Py1WNAk",
+                    authDomain: "devrimoncu-web.firebaseapp.com",
+                    projectId: "devrimoncu-web",
+                    storageBucket: "devrimoncu-web.firebasestorage.app",
+                    messagingSenderId: "500535246792",
+                    appId: "1:500535246792:web:3118c2d180443513b60afd"
+                };
 
-            window.db = getFirestore(initializeApp(firebaseConfig));
-            window.firebaseOps = { doc, getDoc, updateDoc, increment, setDoc };
-            
-            // İstatistikleri Çek
-            refreshStats("deepmotion"); 
-            refreshStats("speakeasy");
-            refreshStats("football");
+                const app = initializeApp(firebaseConfig);
+                window.db = getFirestore(app);
+                window.firebaseOps = { doc, getDoc, updateDoc, increment };
+                
+                // İstatistikleri Yenile
+                ["deepmotion", "speakeasy", "football"].forEach(refreshStats);
+            } catch (e) {
+                console.error("Firebase init failed:", e);
+            }
         }
 
         async function refreshStats(pid) {
             if(!window.db) return;
-            const docRef = window.firebaseOps.doc(window.db, "products", pid);
-            const snap = await window.firebaseOps.getDoc(docRef);
-            if(snap.exists()) {
-                const data = snap.data();
-                document.getElementById(`view-${pid}`).innerText = (data.views||0) + " Views";
-                document.getElementById(`down-${pid}`).innerText = (data.downloads||0) + " DLs";
-            }
+            try {
+                const docRef = window.firebaseOps.doc(window.db, "products", pid);
+                const snap = await window.firebaseOps.getDoc(docRef);
+                if(snap.exists()) {
+                    const data = snap.data();
+                    document.getElementById(`view-${pid}`).innerText = (data.views || 0) + " Views";
+                    document.getElementById(`down-${pid}`).innerText = (data.downloads || 0) + " DLs";
+                }
+            } catch (e) { console.error(e); }
         }
 
         window.trackDownload = async (pid) => {
             if(window.db) {
                 const ref = window.firebaseOps.doc(window.db, "products", pid);
-                window.firebaseOps.updateDoc(ref, { 
+                await window.firebaseOps.updateDoc(ref, { 
                     views: window.firebaseOps.increment(1),
                     downloads: window.firebaseOps.increment(1) 
                 });
             }
-        }
+        };
 
         window.handleBuy = async (pid) => {
             const btn = document.getElementById(`btn-${pid}`);
             if (!checkoutLinks[pid]) { alert("Coming soon!"); return; }
-            if (!window.LemonSqueezy) { btn.innerText = "Opening..."; window.location.href = checkoutLinks[pid]; return; }
+            
             btn.innerHTML = "Processing...";
             try {
                 if(window.db) {
                     const ref = window.firebaseOps.doc(window.db, "products", pid);
                     window.firebaseOps.updateDoc(ref, { views: window.firebaseOps.increment(1) });
                 }
-                LemonSqueezy.Url.Open(checkoutLinks[pid]);
+                if (window.LemonSqueezy) {
+                    LemonSqueezy.Url.Open(checkoutLinks[pid]);
+                } else {
+                    window.location.href = checkoutLinks[pid];
+                }
             } catch(e) {
                 window.location.href = checkoutLinks[pid];
             } finally {
-                setTimeout(() => btn.innerText = "Buy / Download", 1000);
+                setTimeout(() => btn.innerText = "Buy / Download", 2000);
             }
-        }
+        };
     </script>
 </body>
 </html>
